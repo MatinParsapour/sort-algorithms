@@ -20,10 +20,6 @@ public class ChronometerServiceImpl implements Service<ChronometerServiceImpl, L
         long start =System.nanoTime();
         algorithm.sort();
         long end =System.nanoTime();
-        long duration = end - start;
-//        if (duration > 1) {
-//            duration = TimeUnit.MILLISECONDS.toSeconds(duration);
-//        }
-        return duration;
+        return end - start;
     }
 }
