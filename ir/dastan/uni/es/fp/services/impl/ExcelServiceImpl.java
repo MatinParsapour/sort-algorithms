@@ -20,6 +20,7 @@ public class ExcelServiceImpl implements Service<ExcelServiceImpl, Boolean, List
     private long sampleNumber = 1;
     private Algorithm algorithm;
     private boolean isDurations = false;
+    private int size = 0;
 
     @Override
     public ExcelServiceImpl set(List<? extends Number> value) {
@@ -40,6 +41,11 @@ public class ExcelServiceImpl implements Service<ExcelServiceImpl, Boolean, List
 
     public ExcelServiceImpl set(boolean isDurations) {
         this.isDurations = isDurations;
+        return this;
+    }
+
+    public ExcelServiceImpl set(int size) {
+        this.size = size;
         return this;
     }
 
@@ -69,17 +75,14 @@ public class ExcelServiceImpl implements Service<ExcelServiceImpl, Boolean, List
                     if (sum >= list.size()) {
                         break;
                     }
-                    row.createCell(tempIndex).setCellValue(Long.parseLong(String.valueOf(list.get(sum))));
+                    row.createCell(tempIndex).setCellValue(list.get(sum).longValue());
                 }
                 rowNumber++;
             }
 
-            FileOutputStream excel = new FileOutputStream(algorithm.getClass().getSimpleName() + "_" + algorithm.getList().size() + ".xlsx");
+            FileOutputStream excel = new FileOutputStream(algorithm.getClass().getSimpleName() + "_" + size + ".xlsx");
             workbook.write(excel);
             excel.close();
-            for (int column = 0; column < GROUP_SIZE; column++) {
-                sheet.autoSizeColumn(column);
-            }
         } catch (IOException exception) {
             ContextUtil.getDisplayTextServiceImpl().set("An error occurred : " + exception.getMessage()).perform();
         } finally {
@@ -118,5 +121,9 @@ public class ExcelServiceImpl implements Service<ExcelServiceImpl, Boolean, List
             name.append("_unsorted");
         }
         return name.toString();
+    }
+
+    public void clear() {
+        workbook = null;
     }
 }

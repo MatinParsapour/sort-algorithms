@@ -42,17 +42,18 @@ public class AlgorithmUtil {
         this.algorithm = algorithm;
     }
 
-    public void run(long sampleSize) {
+    public void run(long sampleSize, long size) {
         long index = 0;
         long counter = 1;
-        long size = algorithm.getList().size();
         List<Long> durations = new ArrayList<>();
         boolean printDataInExcel = ((size / GROUP_SIZE) * sampleSize) <= EXCEL_MAXIMUM_ROW;
         boolean printDataInConsole = ((size / GROUP_SIZE) * sampleSize) <= EFFICIENT_CONSOLE_PRINTING_SIZE;
         if (!printDataInConsole) {
             ContextUtil.getDisplayTextServiceImpl().set(ConsoleColor.RED_BOLD + "WARNING : Because of large sample size and length of list, only summarized data will be printed." + ConsoleColor.RESET).perform();
         }
+        ContextUtil.getExcelServiceImpl().set((int) size);
         while (index < sampleSize) {
+            algorithm.populate(size);
             ContextUtil.getDisplayTextServiceImpl().set(String.format("%s%s%s", "-".repeat(50), "Sample Number " + counter,"-".repeat(50))).perform();
             if (printDataInConsole) {
                 ContextUtil.getDisplayTextServiceImpl().set(String.format("%s:", "Unsorted List")).perform();
@@ -68,7 +69,6 @@ public class AlgorithmUtil {
             }
             ContextUtil.getDisplayTextServiceImpl().set(String.format("%s%s%s", "-".repeat(37), String.format("Sample %s sorted in %s nano seconds", counter, time), "-".repeat(37))).perform();
             algorithm.clear();
-            algorithm.populate(size);
             index++;
             counter++;
         }
@@ -77,16 +77,10 @@ public class AlgorithmUtil {
         if (!printDataInExcel) {
             ContextUtil.getDisplayTextServiceImpl().set(ConsoleColor.RED_BACKGROUND_BRIGHT + "WARNING : Because of large sample size and length of list, only time of list being sorted be added to excel" + ConsoleColor.RESET).perform();
         }
+        ContextUtil.getExcelServiceImpl().clear();
     }
 
-    public static Algorithm getAlgorithm(int index, long size) {
-        try {
-            Algorithm algo = algorithms.get(index);
-            algo.populate(size);
-            return algo;
-        } catch (NullPointerException exception) {
-            ContextUtil.getDisplayTextServiceImpl().set(ConsoleColor.RED_BOLD + "ERROR: please select from the list" + ConsoleColor.RESET).perform();
-            return null;
-        }
+    public static Algorithm getAlgorithm(int index) {
+        return algorithms.get(index);
     }
 }
